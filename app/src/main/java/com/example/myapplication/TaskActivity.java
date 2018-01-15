@@ -27,30 +27,44 @@ import java.util.stream.Stream;
 
 public class TaskActivity extends AppCompatActivity {
     //TODO Add Time of Deadline + calendar
+
     RecyclerView recyclerView;
     private int index = 0;
     private String date = "";
     private String id = "null";
+    private EditText editShort, editFull;
 
     //Открываем базу данных
-    final AppDatabase db = Room
+    //TODO CHECK WHY NULL_POINTER ROMAN CHTO ZA DELA?
+    /*final AppDatabase db = Room
             .databaseBuilder(getApplicationContext(), AppDatabase.class, "project.db")
             .fallbackToDestructiveMigration()
             .allowMainThreadQueries()
-            .build();
+            .build();*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task);
+
         Intent intent = getIntent();
         id = intent.getStringExtra("data");
         /**
          * @params String id is Card id. По нему можно взять данные из БД,если объекта не существует предложить ввести данные.
          */
+        editFull = findViewById(R.id.editTextFull);
+        editShort = findViewById(R.id.editTextShort);
         if(id != "null"){
-            //TODO Show Data
+          //  Tasks task = db.tasksDao().loadAllbyTaskId(Integer.valueOf(id));
+          //  String taskInfo = db.taskInfoDao().getDescription(Integer.valueOf(id));
+            //TODO test if task is null work
+            //Если уже создан,то подгружаем информацию
+            //if(!task.getShortDescriprion().isEmpty()){
+             //   editShort.setText(task.getShortDescriprion());
+             //   editFull.setText(taskInfo);
+                //TODO Load CheckBoxes
+            //}
         }
         final EditText editText = findViewById(R.id.checkBox);
         final MyAdapter adapter = setRecycleView(recyclerView,index,R.id.checkList);
@@ -73,13 +87,13 @@ public class TaskActivity extends AppCompatActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO Here you can save all data from edit texts
+                //TODO Test setting data
                 EditText shortDescriptionEdit = findViewById(R.id.editTextShort);
                 String shortDescription = String.valueOf(shortDescriptionEdit.getText());
                 EditText decriptionEdit = findViewById(R.id.editTextFull);
                 String description = String.valueOf(decriptionEdit.getText());
-                db.tasksDao().insertAll(new Tasks(shortDescription, System.currentTimeMillis(), id));
-                db.taskInfoDao().insertAll(new taskInfo(description, id));
+               // db.tasksDao().insertAll(new Tasks(shortDescription, System.currentTimeMillis(), id));
+              //  db.taskInfoDao().insertAll(new taskInfo(description, id));
                 saveData(date);
             }
         });
@@ -93,7 +107,7 @@ public class TaskActivity extends AppCompatActivity {
                 ArrayList<String> newData = new ArrayList<>();
                 String checkName = String.valueOf(editText.getText());
                 //TODO Здесь нужно сохранить checkName в Базу Данных
-                db.checkDao().insertAll(new Check(checkName, 0, id));
+               // db.checkDao().insertAll(new Check(checkName, 0, id));
                 newData.add(checkName); //TODO Remake Adapter to getting one String not ArrayList
                 index++;
                 adapter.addData(newData);
@@ -124,19 +138,16 @@ public class TaskActivity extends AppCompatActivity {
             finish();
         }
     }
+
     private boolean isToday(String in){
         //TODO Check data
         return false;
     }
-
     private boolean isTomorrow(String in){
         //TODO Check data
         return false;
     }
-    private boolean isDataExist(String id){
-        //TODO Check if Data Exist
-        return false;
-    }
+
     public MyAdapter setRecycleView(RecyclerView recycleView,int index,@IdRes int id){
         recycleView = findViewById(id);
         final MyAdapter adapter = new MyAdapter();

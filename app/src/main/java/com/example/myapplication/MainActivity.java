@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private final String TAG = "myLog";
@@ -33,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     MyAdapter adapterToday, adapterTomorrow, adapterFuture;
 
     //Создаём базу данных
+    //TODO check if Thread UI?
+    //TODO Why NullPointer ? ))))))000000
     AppDatabase db = Room
             .databaseBuilder(getApplicationContext(), AppDatabase.class, "project.db")
             .fallbackToDestructiveMigration()
@@ -57,8 +60,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, TaskActivity.class);
-                intent.putExtra("data", "null");
-                startActivityForResult(intent,1);
+                intent.putExtra("data",indexList.size());
+                indexList.add(String.valueOf(indexList.size()));
+                startActivityForResult(intent,0);
             }
         });
     }
@@ -77,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                 data.add("Item id = " +
                         String.valueOf(indexList.size()));
                 indexList.add(String.valueOf(indexList.size()));
-                Log.d(TAG,String.valueOf(data.size()));
+             //   Log.d(TAG,String.valueOf(data.size()));
             }
         }
         final MyAdapter adapter = new MyAdapter();
@@ -93,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                         String data_id = adapter.data.get(position);
                         Intent intent = new Intent(MainActivity.this, TaskActivity.class);
                         intent.putExtra("data", data_id);
-                        startActivityForResult(intent,0);
+                        startActivityForResult(intent,1);
                     }
                 })
         );
@@ -103,6 +107,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(data != null){
+            Log.d("myLog","I was here");
+            Log.d("myLog","requesCode:" + String.valueOf(requestCode));
+            Log.d("myLog","resultCode:" + String.valueOf(resultCode));
+            Log.d("myLog","date:" + data.getStringExtra("date"));
              if(requestCode == 0){
                  //TODO Change already existing card
                  /**
@@ -112,21 +120,24 @@ public class MainActivity extends AppCompatActivity {
              else{
                  //TODO Create new card
                  String time = data.getStringExtra("date");
-                 ArrayList<String> newData = new ArrayList<>();
                  //TODO Взять описание карточки по id
                  String card_id = data.getStringExtra("id");
-                 if (time == "today") {
+
+                 if (time.equals("today")) {
 
                  }
-                 if(time == "tomorrow"){
+                 if(time.equals("tomorrow")){
 
                  }
-                 if(time == "future"){
+                 if(time.equals("future")){
                      //TODO Тестовый режим
-                     newData.add(card_id);
-                     indexFuture++;
+                     ArrayList<String> newData = (ArrayList<String>) adapterFuture.getData();
+                     newData.add(String.valueOf(indexList.size()));
+                     indexList.add(String.valueOf(indexList.size()));
+                     //indexFuture++;
                      adapterFuture.addData(newData);
-                     adapterFuture.notifyItemInserted(indexFuture);
+                     adapterFuture.notifyItemRangeRemoved(0, indexFuture);
+                     adapterFuture.notifyItemRangeInserted(0, ++indexFuture);
                  }
 
              }
@@ -179,6 +190,9 @@ public class MainActivity extends AppCompatActivity {
 
         public void addData(List<String> inData) {
             data = inData;
+        }
+        public List<String> getData() {
+            return data;
         }
 
         @Override
