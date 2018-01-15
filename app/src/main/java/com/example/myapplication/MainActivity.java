@@ -36,11 +36,11 @@ public class MainActivity extends AppCompatActivity {
     //Создаём базу данных
     //TODO check if Thread UI?
     //TODO Why NullPointer ? ))))))000000
-    AppDatabase db = Room
+    /*AppDatabase db = Room
             .databaseBuilder(getApplicationContext(), AppDatabase.class, "project.db")
             .fallbackToDestructiveMigration()
             .allowMainThreadQueries()
-            .build();
+            .build();*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
